@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 import pandas as pd
-from bs4 import BeautifulSoup
+from bs4 import beautifulSoup
 
 def fetch_hotdeals(keyword):
     url = "https://arca.live/b/hotdeal"  # 아카라이브 핫딜 게시판
