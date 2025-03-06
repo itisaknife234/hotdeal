@@ -1,4 +1,4 @@
 requests
 pandas
-beutifulsoup4
+beutifulsoup4 == 4.9.0.0
 lxml
