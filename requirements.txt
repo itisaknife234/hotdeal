@@ -1,4 +1,3 @@
 requests
 pandas
-beutifulsoup4 lxml
 beutifulsoup4
