@@ -4,9 +4,8 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 import time
-import shutil
-import os
 
 def get_chromedriver():
     chrome_options = Options()
@@ -15,15 +14,14 @@ def get_chromedriver():
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     
-    # Streamlit Cloud 또는 서버 환경에 따라 크롬 드라이버 경로 자동 설정
-    chrome_path = shutil.which("chromedriver")
-    if chrome_path:
-        service = Service(chrome_path)
-    else:
-        st.error("❌ ChromeDriver가 설치되어 있지 않습니다. 관리자에게 문의하세요.")
+    try:
+        # WebDriverManager를 사용하여 최신 ChromeDriver 다운로드 및 설치
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+        return driver
+    except Exception as e:
+        st.error(f"❌ ChromeDriver 실행 중 오류 발생: {e}")
         return None
-    
-    return webdriver.Chrome(service=service, options=chrome_options)
 
 def fetch_hotdeals(keyword):
     url = f"https://arca.live/b/hotdeal?target=all&keyword={keyword}"  # 아카라이브 핫딜 검색 URL
