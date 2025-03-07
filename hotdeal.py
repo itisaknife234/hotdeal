@@ -3,23 +3,35 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 import time
+import shutil
+import os
 
-def fetch_hotdeals(keyword):
-    url = f"https://arca.live/b/hotdeal?target=all&keyword={keyword}"  # 아카라이브 핫딜 검색 URL
-    st.write(f"🔹 [1] 요청할 URL: {url}")
-
-    # Selenium 설정
+def get_chromedriver():
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # 브라우저 창 없이 실행
+    chrome_options.add_argument("--headless")  # GUI 없이 실행
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    # Streamlit Cloud 또는 서버 환경에 따라 크롬 드라이버 경로 자동 설정
+    chrome_path = shutil.which("chromedriver")
+    if chrome_path:
+        service = Service(chrome_path)
+    else:
+        st.error("❌ ChromeDriver가 설치되어 있지 않습니다. 관리자에게 문의하세요.")
+        return None
+    
+    return webdriver.Chrome(service=service, options=chrome_options)
+
+def fetch_hotdeals(keyword):
+    url = f"https://arca.live/b/hotdeal?target=all&keyword={keyword}"  # 아카라이브 핫딜 검색 URL
+    st.write(f"🔹 [1] 요청할 URL: {url}")
+    
+    driver = get_chromedriver()
+    if driver is None:
+        return []
     
     driver.get(url)
     time.sleep(3)  # 페이지 로딩 대기
@@ -54,7 +66,7 @@ def main():
                 st.write(f"🔍 최근 3개의 결과를 찾았습니다!")
                 st.dataframe(df)
             else:
-                st.write("❌ 해당 키워드에 대한 핫딜이 없습니다.")
+                st.warning("❌ 해당 키워드에 대한 핫딜이 없습니다.")
 
 if __name__ == "__main__":
     main()
