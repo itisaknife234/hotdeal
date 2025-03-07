@@ -4,7 +4,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 
 def fetch_hotdeals(keyword):
-    url = "https://arca.live/b/hotdeal"  # 아카라이브 핫딜 게시판
+    url = f"https://arca.live/b/hotdeal?target=all&keyword={keyword}"  # 아카라이브 핫딜 검색 URL
     headers = {"User-Agent": "Mozilla/5.0"}
     response = requests.get(url, headers=headers)
     
@@ -14,10 +14,11 @@ def fetch_hotdeals(keyword):
     soup = BeautifulSoup(response.text, "html.parser")
     deals = []
     
-    for item in soup.select(".list_title span a"):
-        title = item.text.strip()
-        link = "https://arca.live" + item.get("href")
-        if keyword.lower() in title.lower():
+    for item in soup.select(".vrow"):  # 게시글 리스트에서 정보 가져오기
+        title_tag = item.select_one(".title a")  # 게시글 제목
+        if title_tag:
+            title = title_tag.text.strip()
+            link = "https://arca.live" + title_tag.get("href")
             deals.append({"제목": title, "링크": link})
     
     return deals[:3]  # 최신 3개 항목만 반환
