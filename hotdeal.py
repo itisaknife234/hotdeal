@@ -52,7 +52,7 @@ def fetch_hotdeals(keyword):
     return deals[:3]  # 최신 3개 항목만 반환
 
 def main():
-    st.title("핫딜 검색기 🔥")
+    st.title("핫딜 검색기")
     
     keyword = st.text_input("검색할 핫딜 키워드를 입력하세요:", "")
     
@@ -61,10 +61,10 @@ def main():
             results = fetch_hotdeals(keyword)
             if results:
                 df = pd.DataFrame(results)
-                st.write(f"🔍 최근 3개의 결과를 찾았습니다!")
+                st.write(f"최근 3개의 결과를 찾았습니다!")
                 st.dataframe(df)
             else:
-                st.warning("❌ 해당 키워드에 대한 핫딜이 없습니다.")
+                st.warning("해당 키워드에 대한 핫딜이 없습니다.")
 
 if __name__ == "__main__":
     main()
